@@ -8,51 +8,7 @@ We will setup two vms, one for the web service and one for the reverse proxy. Th
 
 ## Docker and docker compose
 
-Necessary for both vms:
-
-* add docker repository
-
-```console
-sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-* install docker and docker compose
-
-```console
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo usermod -aG docker ubuntu
-```
-
-* setup mtu and internal network in docker
-
-By default docker uses a larger mtu size then OpenStack. The internal network 172.17.0.0/16 can interfere with other networks in use. To change the mtu size and default network (this can be any private network not already in use) create the file ```/etc/docker/daemon.json``` with permissions 644.
-
-```console
-echo '{
-   "bip":"192.168.140.1/24",
-   "mtu":1440
-}' | sudo tee /etc/docker/daemon.json
-```
-
-To change the permissions:
-```console
-sudo chmod 644 /etc/docker/daemon.json
-```
-
-Then reload the daemon and restart docker:
-```console
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
+All requirements already solved
 
 # Deploying FastAPI with docker
 
