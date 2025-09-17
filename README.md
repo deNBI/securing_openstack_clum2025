@@ -1,6 +1,6 @@
-# Containerized web-services workshop
+# Securing a web service in OpenStack with internal network and reverse proxy
 
-In this workshop, we will focus on how to containerize an application and deploy the application as a web service in the de.NBI cloud infrastructure. We will cover basics in the usage of container technology, configure an reverse proxy together and use "Let's encrypt" to secure your website. We will show you key mechanisms and practices how you can deploy your own webservices in our cloud infrastructure.
+In this workshop, we will focus on how to secure a exposed service via a reverse-proxy and loadbalancer in the de.NBI Berlin Openstack Environment. We will cover basics in the setup of network structure in openstack via the GUI, creating a vm and setting everything up for a docker-based and simplified service, which needs to be exposed to the internet, setting up a reverse proxy via docker aswell which handles the SSL-termination and creates HTTTP/S-certification completely automated. We will show you key mechanisms and practices how you can secure/expose your own webservices in our cloud infrastructure. Depending on the success of the hands-on session we can also cover authentication or some more detailed questions.
 
 # Preparation
 
