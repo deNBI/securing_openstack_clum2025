@@ -1,10 +1,11 @@
 # Securing a web service in OpenStack with internal network and reverse proxy
 
-In this workshop, we will focus on how to secure a exposed service via a reverse-proxy and loadbalancer in the de.NBI Berlin Openstack Environment. We will cover basics in the setup of network structure in openstack via the GUI, creating a vm and setting everything up for a docker-based and simplified service, which needs to be exposed to the internet, setting up a reverse proxy via docker aswell which handles the SSL-termination and creates HTTTP/S-certification completely automated. We will show you key mechanisms and practices how you can secure/expose your own webservices in our cloud infrastructure. Depending on the success of the hands-on session we can also cover authentication or some more detailed questions.
+In this workshop, we will focus on how to secure a exposed webservice via a reverse-proxy and a loadbalancer in the de.NBI Berlin Openstack environment. We will cover basics in the setup of network structure in openstack via the GUI, creating an instance/virtual-machine (VM) for using docker and setting everything up for a docker-based and simplified webservice, which will be exposed to the internet. We are setting up a reverse-proxy via docker aswell which will handle the SSL-termination. Therefore we will setup a automated HTTTP/S-certification. We will show you the key-mechanisms and practices how you can secure/expose your own webservices in our cloud infrastructure. Depending on the success of the hands-on session we can also cover authentication or some more detailed questions.
 
 # Preparation
 
-We will setup two vms, one for the web service and one for the reverse proxy. They will communicate over one network, and the web service will be reachable through the reverse-proxy. In each step it is mentioned for with vm this step applies. Some steps must be taken for both, this will also be stated.
+First of all we have to setup a sufficient netowrks tructure to server our secure setup. We recommend the following setup for the exposure of a webservice in our cloud environment. 
+For the reason of simplicity, we will setup only one instance/VM, handling the web service and the reverse proxy in one machine( We recommend to seeprate the services in production to acheive all the advantages of a secure setup like loadbalancing, security, reliability and performance. 
 
 ## Docker and docker compose
 
