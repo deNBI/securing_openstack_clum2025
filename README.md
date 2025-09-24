@@ -1,5 +1,4 @@
-# Secure Your Web Service: A Hands-On Workshop
-
+# Securing a web service in OpenStack with internal network and reverse proxy: A Hands-On Workshop
 ---
 
 This workshop will teach you how to **secure an exposed web service** using a **reverse proxy, load balancer, firewall rules, SSL/TLS encryption,** and **authentication** (BasicAuth and O2AUTH) within the de.NBI Berlin OpenStack environment.
@@ -13,14 +12,9 @@ This workshop will teach you how to **secure an exposed web service** using a **
 
 This workshop provides a practical guide to securing and exposing your own web services in our cloud infrastructure. We'll focus on key practices and hands-on application. Depending on our progress, we can also cover more detailed topics and questions.
 
-
-# Securing a web service in OpenStack with internal network and reverse proxy
-
-In this workshop, we will focus on how to **secure a exposed webservice** via a **reverse-proxy, a loadbalancer, Firewall-Rules/SecGroup-Rules, Encryption via SSL/TLS and authentication via Basicauth and O2AUTH** in the [de.NBI Berlin](https://denbi-cloud.bihealth.org/) Openstack environment. We will cover the basics of setting up a sufficient network structure in openstack via the GUI, creating an instance(s)/virtual-machine(s) (VMs) for using docker and setting everything up for a docker-based and simplified webservice, which will be exposed to the internet. We are setting up a reverse-proxy via docker aswell which will handle the HTTP/S-Encryption and the authentication part. Therefore we will setup a automated HTTTP/S-certification and the needed steps to achieve this goal. We will show you the key-mechanisms and practices how you can secure/expose your own webservices in our cloud infrastructure. Depending on the success of the hands-on session we can also cover some more detailed questions.
-
 # Preparation
 
-- [ ] Everybody has access to the Openstack-Project "CLUM2025SecWeb1"
+- [x] Everybody has access to the Openstack-Project "CLUM2025SecWeb1"
 - [ ] Everybody should add a Public-Key to the Openstack-Environment for remote-access via ssh on the instances.
 - [ ] Everybody can clone the GitHub-Repository?
 
