@@ -14,9 +14,10 @@ Before we deploying our needed VMs for the webservice and the reverse-proxy we n
 
 # SecGroup (Firewall)
 
-We will need two separate SecurityGroups, one which will handle the ingress to the Reverse-Proxy **ReverseProxy-SecGroup** and one SecGroup which will handle the ingress from the reverse-proxy to the webservice **Webservice-SecGroup**. 
+We will need two separate SecurityGroups, one which will handle the ingress from the loadbalancer to the reverse-Proxy **ReverseProxy-SecGroup** and one SecGroup which will handle the ingress from the reverse-proxy to the webservice **Webservice-SecGroup**. 
 
 e.G. Reverse-Proxy listens on Port 80,443 the SecurityGroup needs the ingress to be allowed on TCP 80,443
+
      Webservice listens on 8080 the SecurityGroup needs the ingress to be allowed on TCP 8080
 
 # Deploying FastAPI with docker
