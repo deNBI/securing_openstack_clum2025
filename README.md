@@ -1,15 +1,23 @@
 # Securing a web service in OpenStack with internal network and reverse proxy
 
-In this workshop, we will focus on how to **secure a exposed webservice** via a **reverse-proxy, a loadbalancer, Firewall-Rules/SecGroup-Rules, Encryption via SSL/TLS and authentication via Basicauth and O2AUTH** in the [de.NBI Berlin](https://denbi-cloud.bihealth.org/) Openstack environment. We will cover the basics of setting up a suitbale network structure in openstack via the GUI, creating an instance(s)/virtual-machine(s) (VMs) for using docker and setting everything up for a docker-based and simplified webservice, which will be exposed to the internet. We are setting up a reverse-proxy via docker aswell which will handle the HTTP/S-Encryption and the authentication part. Therefore we will setup a automated HTTTP/S-certification and the needed steps to achieve this goal. We will show you the key-mechanisms and practices how you can secure/expose your own webservices in our cloud infrastructure. Depending on the success of the hands-on session we can also cover some more detailed questions.
+In this workshop, we will focus on how to **secure a exposed webservice** via a **reverse-proxy, a loadbalancer, Firewall-Rules/SecGroup-Rules, Encryption via SSL/TLS and authentication via Basicauth and O2AUTH** in the [de.NBI Berlin](https://denbi-cloud.bihealth.org/) Openstack environment. We will cover the basics of setting up a sufficient network structure in openstack via the GUI, creating an instance(s)/virtual-machine(s) (VMs) for using docker and setting everything up for a docker-based and simplified webservice, which will be exposed to the internet. We are setting up a reverse-proxy via docker aswell which will handle the HTTP/S-Encryption and the authentication part. Therefore we will setup a automated HTTTP/S-certification and the needed steps to achieve this goal. We will show you the key-mechanisms and practices how you can secure/expose your own webservices in our cloud infrastructure. Depending on the success of the hands-on session we can also cover some more detailed questions.
 
 # Preparation
 
-First of all we have to setup a sufficient netowrks tructure to server our secure setup. We recommend the following setup for the exposure of a webservice in our cloud environment. 
-For the reason of simplicity, we will setup only one instance/VM, handling the web service and the reverse proxy in one machine( We recommend to seeprate the services in production to acheive all the advantages of a secure setup like loadbalancing, security, reliability and performance. 
+- [ ] Everybody has access to the Openstack-Project "CLUM2025SecWeb1"
+- [ ] Everybody should add a Public-Key to the Openstack-Environment for remote-access via ssh on the instances.
+- [ ] Everybody can clone the GitHub-Repository?
 
-## Docker and docker compose
+# Network Setup
 
-All requirements already solved
+Before we deploying our needed VMs for the webservice and the reverse-proxy we need to setup a netowrk infrastructure wwhich is suitbale for a secured setup. For this reason we will setup an **dmz-internal**-network with a subnet which is connected via the default router to the external floating-ip pool **dmz** and therefore all the machines connected to this network can be associated with floating-ip which are located in the dmz and therefore are be accesable from the internet. This network will be used for the **Octavia-Loadbalancer** which will redirect the traffic to the reverse-proxy and therefore to the webservice. Additonally we create an internal **webservice-network** and subnet which will hosting our webservice and reverse-proxy VM.
+
+# SecGroup (Firewall)
+
+We will need two separate SecurityGroups, one which will handle the ingress to the Reverse-Proxy **ReverseProxy-SecGroup** and one SecGroup which will handle the ingress from the reverse-proxy to the webservice **Webservice-SecGroup**. 
+
+e.G. Reverse-Proxy listens on Port 80,443 the SecurityGroup needs the ingress to be allowed on TCP 80,443
+     Webservice listens on 8080 the SecurityGroup needs the ingress to be allowed on TCP 8080
 
 # Deploying FastAPI with docker
 
