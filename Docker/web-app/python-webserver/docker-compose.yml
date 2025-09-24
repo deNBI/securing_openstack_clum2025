@@ -1,0 +1,8 @@
+services:
+    web_server:
+      build: .
+      container_name: python_web_server
+      ports:
+        - "8080:8080"
+      expose:
+        - "8080"
