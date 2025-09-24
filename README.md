@@ -10,7 +10,7 @@ In this workshop, we will focus on how to **secure a exposed webservice** via a 
 
 # Network Setup
 
-Before we deploying our needed VMs for the webservice and the reverse-proxy we need to setup a netowrk infrastructure wwhich is suitbale for a secured setup. For this reason we will setup an **dmz-internal**-network with a subnet which is connected via the default router to the external floating-ip pool **dmz** and therefore all the machines connected to this network can be associated with floating-ip which are located in the dmz and therefore are be accesable from the internet. This network will be used for the **Octavia-Loadbalancer** which will redirect the traffic to the reverse-proxy and therefore to the webservice. Additonally we create an internal **webservice-network** and subnet which will hosting our webservice and reverse-proxy VM.
+Before we deploying our needed VMs for the webservice and the reverse-proxy we need to setup a network infrastructure wwhich is suitbale for a secured setup. For this reason we will setup an **dmz-internal**-network with a subnet which is connected via the default router to the external floating-ip pool **dmz** and therefore all the machines connected to this network can be associated with floating-ip which are located in the dmz and therefore are be accesable from the internet. This network will be used for the **Octavia-Loadbalancer** which will redirect the traffic to the reverse-proxy and therefore to the webservice. Additonally we create an internal **webservice-network** and subnet which will hosting our webservice and reverse-proxy VM.
 
 # SecGroup (Firewall)
 
