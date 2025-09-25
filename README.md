@@ -1,34 +1,180 @@
-# Securing a web service in OpenStack with internal network and reverse proxy: A Hands-On Workshop
+# Securing a Web Service in OpenStack: A Hands-On Workshop
 ---
 
-This workshop will teach you how to **secure an exposed web service** using a **reverse proxy, load balancer, firewall rules, SSL/TLS encryption,** and **authentication** (BasicAuth and O2AUTH) within the de.NBI Berlin OpenStack environment.
+This workshop is a practical guide to **securing a web service** in the de.NBI Berlin OpenStack environment. You'll learn how to expose a service to the internet safely, using a **reverse proxy**, **load balancer**, and **firewall rules**, complemented by **SSL/TLS encryption** and **authentication**.
 
 ### What We'll Cover
 
-* **Network Setup:** Learn to set up a sufficient network structure in OpenStack using the graphical user interface.
-* **Virtual Machines & Docker:** Create virtual machines (VMs) and configure them to host a simplified, Docker-based web service that will be exposed to the internet.
-* **Reverse Proxy:** Set up a Dockerized reverse proxy to handle **HTTP/S encryption** and **authentication**.
-* **Automated HTTPS:** Discover the key mechanisms to achieve automated HTTPS certification for your web service.
+* **Network Setup**: Configure a secure network architecture using the OpenStack graphical user interface.
+* **Virtual Machines & Docker**: Create and set up virtual machines to host a simplified, containerized web service.
+* **Reverse Proxy**: Implement a Dockerized reverse proxy to manage **HTTP/S encryption** and **authentication**.
+* **Automated HTTPS**: Discover the key mechanisms to achieve automated SSL/TLS certificates for your service.
 
-This workshop provides a practical guide to securing and exposing your own web services in our cloud infrastructure. We'll focus on key practices and hands-on application. Depending on our progress, we can also cover more detailed topics and questions.
+This workshop emphasizes hands-on application and best practices for securing your own cloud-based web services. We will delve into more detailed topics and questions as time permits.
 
-# Preparation
+---
 
-- [x] Everybody has access to the Openstack-Project "CLUM2025SecWeb1"
-- [ ] Everybody should add a Public-Key to the Openstack-Environment for remote-access via ssh on the instances.
-- [ ] Everybody can clone the GitHub-Repository?
+### Technologies Used
 
-# Network Setup
+| Tool/Technology | Description |
+| :--- | :--- |
+| **OpenStack** | A suite of open-source software for creating and managing private and public clouds. In this workshop, we'll use it to provision our virtual machines, networks, and security rules. |
+| **OpenStack Octavia** | The native load-balancing-as-a-service component of OpenStack. We'll use it to distribute incoming traffic and route it to our reverse proxy. |
+| **Docker** | A platform for developing, shipping, and running applications in containers. We'll use it to package our web service and reverse proxy, ensuring they are portable and easy to manage. |
+| **Python HTTP Server** | A simple web server written in Python. This will be our "dummy" web service to demonstrate the security principles. |
+| **Caddy** | An open-source web server with powerful reverse proxy capabilities. We'll use it for its built-in automation of HTTPS certificate provisioning via Let's Encrypt. Caddy simplifies SSL/TLS encryption, making it easy to secure web traffic. |
+| **BasicAuth & O2AUTH** | We will implement these two forms of authentication: **BasicAuth** (simple username and password) and **O2AUTH** (a more secure, token-based authentication method) to protect our web service from unauthorized access. |
 
-Before we deploying our needed VMs for the webservice and the reverse-proxy we need to setup a network infrastructure wwhich is suitbale for a secured setup. For this reason we will setup an **dmz-internal**-network with a subnet which is connected via the default router to the external floating-ip pool **dmz** and therefore all the machines connected to this network can be associated with floating-ip which are located in the dmz and therefore are be accesable from the internet. This network will be used for the **Octavia-Loadbalancer** which will redirect the traffic to the reverse-proxy and therefore to the webservice. Additonally we create an internal **webservice-network** and subnet which will hosting our webservice and reverse-proxy VM.
+---
 
-# SecGroup (Firewall)
+### Prerequisites
 
-We will need two separate SecurityGroups, one which will handle the ingress from the loadbalancer to the reverse-Proxy **ReverseProxy-SecGroup** and one SecGroup which will handle the ingress from the reverse-proxy to the webservice **Webservice-SecGroup**. 
+* [ ] Everyone has access to the OpenStack project "CLUM2025SecWeb1".
+* [ ] Everyone has added a Public SSH Key to the OpenStack environment for remote access.
+* [ ] Everyone can clone the workshop's GitHub repository.
 
-e.G. Reverse-Proxy listens on Port 80,443 the SecurityGroup needs the ingress to be allowed on TCP 80,443
+---
 
-     Webservice listens on 8080 the SecurityGroup needs the ingress to be allowed on TCP 8080
+### Step 1: Network and Security Group Setup 🌐
+
+Before deploying our VMs, we will create a network infrastructure suitable for a secure setup. This involves two key networks and their associated security groups.
+
+#### Network Setup
+
+* **`dmz-internal` Network**: A network with a subnet that connects to the default router and the external floating IP pool, allowing our Octavia Load Balancer to receive internet traffic.
+* **`webservice-network`**: An internal network and subnet that will host our web service and reverse proxy VMs. This network is isolated from direct public access.
+
+#### Security Groups (Firewall)
+
+We will configure two separate Security Groups to act as our firewalls:
+
+* **`ReverseProxy-SecGroup`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports **80 (HTTP)** and **443 (HTTPS)**.
+* **`Webservice-SecGroup`**: This group controls traffic from the reverse proxy to the internal web service. For example, if our service listens on port `8080`, this group will allow ingress on that port.
+
+---
+
+### Step 2: Deploying the Virtual Machines 🚀
+
+Now we will launch two virtual machines (VMs) and connect them to our private network and corresponding security groups.
+
+#### **Reverse Proxy VM**
+
+* **Name:** `reverse-proxy`
+* **Network:** `webservice-network`
+* **Security Group:** `ReverseProxy-SecGroup`
+* **Flavor:** Choose a small flavor (e.g., `m1.small`).
+* **Image:** Use a recent Ubuntu image (e.g., `Ubuntu 22.04 LTS`).
+* **Key Pair:** Select the SSH key pair you added as a prerequisite.
+
+#### **Web Service VM**
+
+* **Name:** `web-service`
+* **Network:** `webservice-network`
+* **Security Group:** `Webservice-SecGroup`
+* **Flavor:** Choose a small flavor (e.g., `m1.small`).
+* **Image:** Use a recent Ubuntu image (e.g., `Ubuntu 22.04 LTS`).
+* **Key Pair:** Select the SSH key pair you added as a prerequisite.
+
+After launching the instances, you can find their internal IP addresses on the OpenStack dashboard. Note these down, as you'll need them later.
+
+---
+
+### Step 3: Creating the Octavia Load Balancer
+
+The load balancer is our entry point from the internet. It will distribute traffic to our reverse proxy VM.
+
+1.  **Create a Load Balancer**: In the OpenStack dashboard, navigate to **Network > Load Balancers** and click **Create Load Balancer**.
+    * **Name:** `workshop-lb`
+    * **Subnet:** Select the `dmz-internal` subnet. This is crucial as it connects the load balancer to the public network.
+    * **Floating IP:** Attach a new or existing floating IP to the load balancer. This will be the public IP address of your web service.
+
+2.  **Add a Listener**: A listener defines the protocol and port on which the load balancer listens for incoming traffic.
+    * Select the `workshop-lb` load balancer and go to the **Listeners** tab. Click **Add Listener**.
+    * **Name:** `http-listener`
+    * **Protocol:** `HTTP`
+    * **Port:** `80`
+    * **Default Pool:** Create a new pool called `http-pool`.
+
+3.  **Configure the Pool**: A pool is a group of backend servers (in our case, the reverse proxy VM) that will handle the traffic.
+    * After creating the listener, you'll be prompted to configure the pool.
+    * **Protocol:** `HTTP`
+    * **Load Balancing Method:** `ROUND_ROBIN`
+    * **Health Monitor:** Create a `HTTP` health monitor to check if the reverse proxy is up and running.
+        * **Type:** `HTTP`
+        * **Delay:** `5` (seconds)
+        * **Timeout:** `3` (seconds)
+        * **Max Retries:** `3`
+
+4.  **Add Members to the Pool**: Finally, add your `reverse-proxy` VM as a member of the pool.
+    * Navigate to the `http-pool` and click **Add Member**.
+    * **IP Address:** Enter the internal IP address of your `reverse-proxy` VM.
+    * **Port:** `80` (The reverse proxy will be configured to listen on this port).
+
+5.  **Repeat for HTTPS**: Follow the same steps to create a second listener for HTTPS traffic.
+    * **Listener Name:** `https-listener`
+    * **Protocol:** `TERMINATED_HTTPS` (This offloads the SSL/TLS encryption to the load balancer, which is a common practice).
+    * **Port:** `443`
+    * **Certificate:** You will need to upload a security certificate for this.
+    * **Default Pool:** Create a new pool called `https-pool`. Add the `reverse-proxy` VM as a member with port `443`.
+
+Now, your load balancer is configured to receive internet traffic on its floating IP and forward it to your reverse proxy VM, providing a secure and scalable entry point for your web service.
+
+---
+
+### Step 4: Configuring and Deploying the Services 💻
+
+We will now configure our VMs to run the web service and the reverse proxy using Docker.
+
+1.  **Clone the GitHub Repository**:
+    * SSH into both the `web-service` and `reverse-proxy` VMs.
+    * On each VM, clone the workshop repository containing the Docker files:
+        ```bash
+        git clone [https://github.com/your-github-repo-url.git](https://github.com/your-github-repo-url.git)
+        cd your-github-repo-name
+        ```
+
+2.  **Deploy the Web Service**:
+    * On the `web-service` VM, navigate to the directory with the `docker-compose.yml` file for the web service.
+    * Start the web service container:
+        ```bash
+        docker compose up -d
+        ```
+    * **Test the connection**: From the `reverse-proxy` VM, use `curl` to verify that you can reach the web service on its internal IP address.
+        ```bash
+        curl http://<web-service-internal-ip>:8080
+        ```
+        You should receive a response from the web service.
+
+3.  **Deploy the Reverse Proxy**:
+    * On the `reverse-proxy` VM, navigate to the directory with the Caddy Docker files.
+    * **Adapt the Caddyfile**: Open the `Caddyfile` and replace the placeholder with the **internal IP address** of your `web-service` VM.
+    * Start the reverse proxy container:
+        ```bash
+        docker compose up -d
+        ```
+    * **Check the Caddy logs**: View the logs to confirm that Caddy has successfully obtained an SSL/TLS certificate from Let's Encrypt.
+        ```bash
+        docker logs caddy-container-name
+        ```
+        Look for messages indicating successful certificate acquisition.
+    * **Test the connection**: From the `web-service` VM, use `curl` to test the reverse proxy.
+        ```bash
+        curl https://<reverse-proxy-internal-ip>
+        ```
+        You should get a response, confirming the reverse proxy is working.
+
+---
+
+### Step 5: Final External Test via Load Balancer ✅
+
+This final step verifies that your entire setup is working from the outside world.
+
+* Find the **floating IP address** of your Octavia load balancer in the OpenStack dashboard.
+* From your local machine (outside of OpenStack), use your web browser or `curl` to access the service via the floating IP.
+    ```bash
+    curl https://<load-balancer-floating-ip>
+    ```
+    Your request should be routed through the load balancer to the reverse proxy, which then forwards it to the web service, and you should receive a successful response. This confirms your secured web service is now accessible on the internet!
 
 # Deploying FastAPI with docker
 
