@@ -1,9 +1,44 @@
 # With the DNS-Name provided Caddy automatically tries to provide a certification via LetsEncrypt, so make sure your Loadbalancer has the same FloatingIP then the corresponding DNS-Entry you are using in the following config
-<YOUR_DNS_ENTRY>> {
-    reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>
-    basicauth {
-        admin $2a$14$7JTsZSWdHLIe.GHyPdpImu0iQrk6HpwUFQ5iRl895zp6x/kxcELIC
-        # For adding new user you need to provide <USERNAME> <HASHED_PASSWORD> 
-        # sudo docker run --rm caddy caddy hash-password --plaintext <PASSWORD_2_HASH>
-   }
+<YOUR_DNS_ENTRY> {
+    # This block configures the caddy-security app and its plugins
+    security {
+        # Define the OAuth2 identity provider for GitHub.
+        oauth identity provider github {
+            client_id env.GITHUB_CLIENT_ID
+            client_secret env.GITHUB_CLIENT_SECRET
+        }
+
+        # The authentication portal where users are redirected to login.
+        authentication portal myportal {
+            enable identity provider github
+            # Set the path for the login portal.
+            path /auth
+        }
+
+        # Define an authorization policy to use on your protected sites.
+        authorization policy my_app_policy {
+            # This is the path to the login portal.
+            set auth url https://<YOUR_DNS_ENTRY>/auth/oauth2/github
+            allow roles authp/user
+            inject headers
+        }
+    }
+
+    # Caddy's routing logic:
+    # Handle all requests to the "/auth" path and its sub-paths.
+    # This is for the authentication portal itself.
+    route /auth* {
+        authenticate with myportal
+    }
+
+    # Handle all other requests (the main application).
+    # This applies the security policy to your application.
+    route * {
+        # The 'authorize' directive is where the protection happens.
+        # It redirects unauthenticated users to the login portal.
+        authorize with my_app_policy
+
+        # This will only be reached if the request passes the 'authorize' check.
+        reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>
+    }
 }
