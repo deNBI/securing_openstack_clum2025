@@ -1,7 +1,3 @@
-I understand. My previous response included the markdown syntax. Here is the entire text in plain markdown format, ready for you to copy and save as a .md file.
-
-Markdown
-
 # Securing a Web Service in OpenStack: A Hands-On Workshop
 ---
 
