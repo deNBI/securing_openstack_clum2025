@@ -109,7 +109,7 @@ The load balancer is our entry point from the internet. It will distribute traff
     * **Protocol:** `TCP`
     * **Load Balancing Method:** `ROUND_ROBIN`
     * **Health Monitor:** Create a `HTTP` health monitor to check if the reverse proxy is up and running.
-        * **Type:** `HTTP`
+        * **Type:** `TCP`
         * **Delay:** `5` (seconds)
         * **Timeout:** `3` (seconds)
         * **Max Retries:** `3`
