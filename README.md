@@ -231,7 +231,7 @@ We will now configure our VMs to run the web service and the reverse proxy using
       # With the DNS-Name provided Caddy automatically tries to provide a certification via LetsEncrypt, so make sure your Loadbalancer has the same FloatingIP then the corresponding DNS-Entry you are using in the following config
       <YOUR_DNS_ENTRY> {
           reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>
-          basicauth {
+          basic_auth {
               admin $2a$14$7JTsZSWdHLIe.GHyPdpImu0iQrk6HpwUFQ5iRl895zp6x/kxcELIC
               # For adding new user you need to provide <USERNAME> <HASHED_PASSWORD> 
               # sudo docker run --rm caddy caddy hash-password --plaintext <PASSWORD_2_HASH>
