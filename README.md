@@ -210,8 +210,23 @@ We will now configure our VMs to run the web service and the reverse proxy using
         You should receive a response from the web service.
 
 3.  **Deploy the Reverse Proxy**:
-    * On the `reverse-proxy` VM, navigate to the directory with the Caddy Docker files.
-    * **Adapt the Caddyfile**: Open the `Caddyfile` and replace the placeholder with the **internal IP address** of your `web-service` VM.
+    * On the `reverse-proxy` VM, navigate to the directory `./Docker/proxy/caddy_basicauth` with the `docker-compose.yml` file for the reverse-proxy.
+    * **Adapt the Caddyfile**:
+      ```
+      # With the DNS-Name provided Caddy automatically tries to provide a certification via LetsEncrypt, so make sure your Loadbalancer has the same FloatingIP then the corresponding DNS-Entry you are using in the following config
+      <YOUR_DNS_ENTRY> {
+          reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>
+          basicauth {
+              admin $2a$14$7JTsZSWdHLIe.GHyPdpImu0iQrk6HpwUFQ5iRl895zp6x/kxcELIC
+              # For adding new user you need to provide <USERNAME> <HASHED_PASSWORD> 
+              # sudo docker run --rm caddy caddy hash-password --plaintext <PASSWORD_2_HASH>
+         }
+      }
+      ```
+      * Adapt the placeholder for the `<YOUR_DNS_ENTRY>` with one of the dns-entries we provide for you. We already defined the dns-entries with corresponding floating/ips from the `dmz` pool/
+      * Adapt the placeholder for the `reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>` with the **internal IP address and the exposed port** of your `web-service` VM.
+      * If you wanna add a new user to basic_auth you have to define it in the Caddyfile with a username and a hashed password
+   
     * Start the reverse proxy container:
         ```bash
         sudo docker compose up -d
