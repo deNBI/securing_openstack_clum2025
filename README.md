@@ -134,6 +134,7 @@ Now, your load balancer is configured to receive internet traffic on its floatin
 
 We will now configure our VMs to run the web service and the reverse proxy using Docker.
 
+
 1.  **Clone the GitHub Repository**:
     * SSH into both the `web-service` and `reverse-proxy` VMs.
     * On each VM, clone the workshop repository containing the Docker files:
@@ -141,6 +142,30 @@ We will now configure our VMs to run the web service and the reverse proxy using
         git clone https://github.com/deNBI/securing_openstack_clum2025.git
         cd /securing_openstack_clum2025
         ```
+
+        ```
+        .
+├── Docker/
+│   ├── proxy/
+│   │   ├── caddy_basicauth/
+│   │   │   ├── Dockerfile
+│   │   │   ├── docker-compose.yml
+│   │   │   └── Caddyfile
+│   │   └── caddy_oauth2/
+│   │       ├── Dockerfile
+│   │       ├── docker-compose.yml
+│   │       └── Caddyfile
+│   └── web-app/
+│       ├── python-webserver/
+│       │   ├── Dockerfile
+│       │   ├── docker-compose.yml
+│       │   └── server.py
+│       └── fast-api/
+│           ├── Dockerfile
+│           ├── docker-compose.yml
+│           └── requirements.txt
+└── README.md
+       ```
 
 2.  **Deploy the Web Service**:
     * On the `web-service` VM, navigate to the directory with the `docker-compose.yml` file for the web service.
