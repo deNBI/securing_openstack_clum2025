@@ -50,15 +50,15 @@ Before deploying our VMs, we will create a network infrastructure suitable for a
 
 #### Network Setup
 
-* **`dmz-internal` Network**: A network with a subnet that connects to the dmz-router ``CLUM2025SecWeb-dmz-router`` and the external floating IP pool ``dmz``, allowing our Octavia Load Balancer to receive internet traffic adn redirect internally to the reverse-proxy VM.
-* **`webservice-network`**: An internal network and subnet that connects to the public-router ``CLUM2025SecWeb1-router-2`` and the external floating IP pool ``public``, allowing our VM's to access the internet and be accessable via the User-Jumphost for remote-access. This network is isolated from direct public access network ``dmz``.
+* **`CLUM2025SecWeb-dmz-int-network` Network**: A network with a subnet that connects to the dmz-router ``CLUM2025SecWeb-dmz-router`` and the external floating IP pool ``dmz``, allowing our Octavia Load Balancer to receive internet traffic adn redirect internally to the reverse-proxy VM.
+* **`CLUM2025SecWeb1-network-2`**: An internal network and subnet that connects to the public-router ``CLUM2025SecWeb1-router-2`` and the external floating IP pool ``public``, allowing our VM's to access the internet and be accessable via the User-Jumphost for remote-access. This network is isolated from direct public access network ``dmz``.
 
 #### Security Groups (Firewall)
 
 We will configure two separate Security Groups to act as our firewalls:
 
-* **`ReverseProxy-SecGroup`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports **80 (HTTP)** and **443 (HTTPS)**. Granularity is recommended (e.G. just allow the loadbalancer to access the reverse-proxy VM)
-* **`Webservice-SecGroup`**: This group controls traffic from the reverse proxy to the internal web service. For example, if our webservice listens on port `8080`, this group will allow ingress on that port. Granularity is recommended (e.G. just allow the reverse-proxy to access the webservice VM)
+* **`ReverseProxy-SecGroup-<YOUR_NAME>`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports **80 (HTTP)** and **443 (HTTPS)**. Granularity is recommended (e.G. just allow the loadbalancer to access the reverse-proxy VM)
+* **`Webservice-SecGroup-<YOUR_NAME>`**: This group controls traffic from the reverse proxy to the internal web service. For example, if our webservice listens on port `8080`, this group will allow ingress on that port. Granularity is recommended (e.G. just allow the reverse-proxy to access the webservice VM)
 
 ---
 
@@ -68,23 +68,23 @@ Now we will launch two virtual machines (VMs) and connect them to our private ne
 
 #### **Reverse Proxy VM**
 
-* **Name:** `reverse-proxy`
-* **Network:** `webservice-network`
-* **Security Group:** `ReverseProxy-SecGroup`
-* **Flavor:** Choose a small flavor (e.g., `m1.small`).
-* **Image:** Use a recent Ubuntu image (e.g., `Ubuntu 22.04 LTS`).
-* **Key Pair:** Select the SSH key pair you added as a prerequisite.
+* **Name:** `reverse-proxy-<YOUR_NAME>`
+* **Network:** `CLUM2025SecWeb1-network-2`
+* **Security Group:** `ReverseProxy-SecGroup-<YOUR_NAME>` , `default`
+* **Flavor:** `de.NBI default`
+* **Image:** `Ubuntu-24.04-Docker`
+* **Key Pair:** Select the SSH key pair you added as a prerequisite
 
 #### **Web Service VM**
 
-* **Name:** `web-service`
-* **Network:** `webservice-network`
-* **Security Group:** `Webservice-SecGroup`
-* **Flavor:** Choose a small flavor (e.g., `m1.small`).
-* **Image:** Use a recent Ubuntu image (e.g., `Ubuntu 22.04 LTS`).
+* **Name:** `web-service-<YOUR_NAME>`
+* **Network:** `CLUM2025SecWeb1-network-2`
+* **Security Group:** ``Webservice-SecGroup-<YOUR_NAME>` , `default`
+* **Flavor:** `de.NBI default`
+* **Image:** `Ubuntu-24.04-Docker`
 * **Key Pair:** Select the SSH key pair you added as a prerequisite.
 
-After launching the instances, you can find their internal IP addresses on the OpenStack dashboard. Note these down, as you'll need them later.
+After launching the instances, you can associate a floating-ip from the pool `public` to your VMs to have remote-access.
 
 ---
 
@@ -93,20 +93,20 @@ After launching the instances, you can find their internal IP addresses on the O
 The load balancer is our entry point from the internet. It will distribute traffic to our reverse proxy VM.
 
 1.  **Create a Load Balancer**: In the OpenStack dashboard, navigate to **Network > Load Balancers** and click **Create Load Balancer**.
-    * **Name:** `workshop-lb`
-    * **Subnet:** Select the `dmz-internal` subnet. This is crucial as it connects the load balancer to the public network.
-    * **Floating IP:** Attach a new or existing floating IP to the load balancer. This will be the public IP address of your web service.
+    * **Name:** `workshop-lb-<YOUR_NAME>`
+    * **Subnet:** Select the `CLUM2025SecWeb-dmz-int-network` subnet. This is crucial as it connects the load balancer to the public network.
+    * **Floating IP:** Attach an existing and predefined floating-ip from the pool `dmz` to your load balancer. This will be the public IP address of your web service and is connected to the dns-entry.
 
 2.  **Add a Listener**: A listener defines the protocol and port on which the load balancer listens for incoming traffic.
     * Select the `workshop-lb` load balancer and go to the **Listeners** tab. Click **Add Listener**.
     * **Name:** `http-listener`
-    * **Protocol:** `HTTP`
+    * **Protocol:** `TCP`
     * **Port:** `80`
     * **Default Pool:** Create a new pool called `http-pool`.
 
 3.  **Configure the Pool**: A pool is a group of backend servers (in our case, the reverse proxy VM) that will handle the traffic.
     * After creating the listener, you'll be prompted to configure the pool.
-    * **Protocol:** `HTTP`
+    * **Protocol:** `TCP`
     * **Load Balancing Method:** `ROUND_ROBIN`
     * **Health Monitor:** Create a `HTTP` health monitor to check if the reverse proxy is up and running.
         * **Type:** `HTTP`
