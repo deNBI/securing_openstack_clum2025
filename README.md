@@ -52,11 +52,11 @@ Before deploying our VMs, we will create a network infrastructure suitable for a
 
 * **`CLUM2025SecWeb-dmz-int-network`**: An internal network with a subnet that connects to the dmz-router ``CLUM2025SecWeb-dmz-router`` and the external floating IP pool ``dmz``, allowing our Octavia Load Balancer to receive internet traffic adn redirect internally to the reverse-proxy VM.
 * **`CLUM2025SecWeb1-network-2`**: An internal network and subnet that connects to the public-router ``CLUM2025SecWeb1-router-2`` and the external floating IP pool ``public``, allowing our VM's to access the internet and be accessable via the User-Jumphost for remote-access. This network is isolated from direct public access network ``dmz``.
-* * **`CLUM2025SecWeb1-reverseproxy-network`**: An internal network and subnet, dedicated to the reverse-proxy VM that connects to the public-router ``CLUM2025SecWeb1-router-2`` and the external floating IP pool ``public``, allowing our VM's to access the internet and be accessable via the User-Jumphost for remote-access. This network is isolated from direct public access network ``dmz``.
+* **`CLUM2025SecWeb1-reverseproxy-network`**: An internal network and subnet, dedicated to the reverse-proxy VM that connects to the public-router ``CLUM2025SecWeb1-router-2`` and the external floating IP pool ``public``, allowing our VM's to access the internet and be accessable via the User-Jumphost for remote-access. This network is isolated from direct public access network ``dmz``.
 
 #### Security Groups (Firewall)
 
-We will configure two separate Security Groups to act as our firewalls:
+We will configure two separate Security Groups to act as our firewalls(locally on the VM):
 
 * **`ReverseProxy-SecGroup-<YOUR_NAME>`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports **80 (HTTP)** and **443 (HTTPS)**. Granularity is recommended (e.G. just allow the loadbalancer to access the reverse-proxy VM)
 * **`Webservice-SecGroup-<YOUR_NAME>`**: This group controls traffic from the reverse proxy to the internal web service. For example, if our webservice listens on port `8080`, this group will allow ingress on that port. Granularity is recommended (e.G. just allow the reverse-proxy to access the webservice VM)
@@ -212,6 +212,20 @@ We will now configure our VMs to run the web service and the reverse proxy using
 
 3.  **Deploy the Reverse Proxy**:
     * On the `reverse-proxy` VM, navigate to the directory `./Docker/proxy/caddy_basicauth` with the `docker-compose.yml` file for the reverse-proxy.
+    * **Check the docker-compose.yml**
+      ```
+      services:
+        caddy_reverse_proxy_basicauth:
+          build: .
+          network_mode: "host"
+          container_name: caddy_reverse_proxy_basicauth
+          volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile
+            - caddy_data:/data
+            
+      volumes:
+        caddy_data:
+      ```
     * **Adapt the Caddyfile**:
       ```
       # With the DNS-Name provided Caddy automatically tries to provide a certification via LetsEncrypt, so make sure your Loadbalancer has the same FloatingIP then the corresponding DNS-Entry you are using in the following config
