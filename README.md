@@ -143,8 +143,8 @@ We will now configure our VMs to run the web service and the reverse proxy using
         cd /securing_openstack_clum2025
         ```
 
-        ```
-        .
+
+         ```.
 ├── Docker/
 │   ├── proxy/
 │   │   ├── caddy_basicauth/
@@ -165,7 +165,7 @@ We will now configure our VMs to run the web service and the reverse proxy using
 │           ├── docker-compose.yml
 │           └── requirements.txt
 └── README.md
-       ```
+```
 
 2.  **Deploy the Web Service**:
     * On the `web-service` VM, navigate to the directory with the `docker-compose.yml` file for the web service.
