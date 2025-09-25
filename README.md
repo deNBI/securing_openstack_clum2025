@@ -168,7 +168,36 @@ We will now configure our VMs to run the web service and the reverse proxy using
       ```
 
 2.  **Deploy the Web Service**:
-    * On the `web-service` VM, navigate to the directory `./Docker/web-app/python-webserver with the `docker-compose.yml` file for the web service.
+    * On the `web-service` VM, navigate to the directory `./Docker/web-app/python-webserver` with the `docker-compose.yml` file for the web service.
+    * Check the exposed ports in the `docker-compose.yml` and `server.py`. The preconfigured port is `8080` but you can adapt it when you want but dont forget you need to adapt the reverse-proxy aswell as the SecGroups if you do so.
+      **docker-compose.yml**
+      ```
+      services:
+         web_server:
+           build: .
+           container_name: python_web_server
+           ports:
+             - "8080:8080"
+      ```
+      **server.py**
+      ```
+      from http.server import HTTPServer, BaseHTTPRequestHandler
+      import socketserver
+
+      class S(BaseHTTPRequestHandler):
+          def do_GET(self):
+              self.send_response(200)
+              self.send_header('Content-type', 'text/html')
+              self.end_headers()
+              self.wfile.write(b'Welcome to CLUM 2025 Secure a Webservice')
+      
+      if __name__ == "__main__":
+          PORT = 8080
+          Handler = S
+          httpd = socketserver.TCPServer(("", PORT), Handler)
+          print("serving at port", PORT)
+          httpd.serve_forever()
+      ```
     * Start the web service container:
         ```bash
         sudo docker compose up -d
