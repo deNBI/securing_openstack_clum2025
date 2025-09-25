@@ -239,7 +239,8 @@ We will now configure our VMs to run the web service and the reverse proxy using
     * **Test the connection**: From the `web-service` VM, use `curl` to test the reverse proxy.
         ```bash
         curl https://<reverse-proxy-internal-ip>
+        ```
+        
+## Connect via the internet
 
-## Connect the vms
-
-Both services should be ready to use, as the web-service is listening on the host port 8080 and the reverse-proxy is forwarding all requests to the web-service on port 8080.
+You should now be able to access the webservice via the dns-hostname of your setup via the internet.
