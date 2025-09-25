@@ -1,44 +1,37 @@
 # With the DNS-Name provided Caddy automatically tries to provide a certification via LetsEncrypt, so make sure your Loadbalancer has the same FloatingIP then the corresponding DNS-Entry you are using in the following config
 <YOUR_DNS_ENTRY> {
-    # This block configures the caddy-security app and its plugins
+    # This block configures the caddy-security app and its plugins.
     security {
-        # Define the OAuth2 identity provider for GitHub.
+        # Define GitHub as the sole identity provider.
         oauth identity provider github {
             client_id env.GITHUB_CLIENT_ID
             client_secret env.GITHUB_CLIENT_SECRET
         }
 
-        # The authentication portal where users are redirected to login.
+        # The authentication portal will only show the GitHub login option.
         authentication portal myportal {
             enable identity provider github
-            # Set the path for the login portal.
             path /auth
         }
 
-        # Define an authorization policy to use on your protected sites.
-        authorization policy my_app_policy {
-            # This is the path to the login portal.
+        # Define the policy that allows any authenticated GitHub user.
+        authorization policy github_access {
             set auth url https://<YOUR_DNS_ENTRY>/auth/oauth2/github
+            # The 'match realm github' directive is sufficient.
+            # It allows anyone authenticated via the GitHub provider.
+            match realm github
             allow roles authp/user
-            inject headers
         }
     }
 
-    # Caddy's routing logic:
-    # Handle all requests to the "/auth" path and its sub-paths.
-    # This is for the authentication portal itself.
+    # Handle all requests to the "/auth" path for the login portal.
     route /auth* {
         authenticate with myportal
     }
 
-    # Handle all other requests (the main application).
-    # This applies the security policy to your application.
+    # All other traffic is protected by the general GitHub access policy.
     route * {
-        # The 'authorize' directive is where the protection happens.
-        # It redirects unauthenticated users to the login portal.
-        authorize with my_app_policy
-
-        # This will only be reached if the request passes the 'authorize' check.
+        authorize with github_access
         reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>
     }
 }
