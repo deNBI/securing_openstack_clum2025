@@ -10,7 +10,7 @@ This workshop is a practical guide to **securing a web service** in the de.NBI B
 * **Reverse Proxy**: Implement a Dockerized reverse proxy to manage **HTTP/S encryption** and **authentication**.
 * **Automated HTTPS**: Discover the key mechanisms to achieve automated SSL/TLS certificates for your service.
 
-This workshop emphasizes hands-on application and best practices for securing your own cloud-based web services. We will delve into more detailed topics and questions as time permits.
+This workshop emphasizes hands-on application and best practices for securing your own cloud-based web services. We could dive into more detailed topics and questions as time permits.
 
 ***
 
@@ -20,7 +20,7 @@ This workshop emphasizes hands-on application and best practices for securing yo
 * **Reverse Proxy**: A server that sits in front of one or more web servers, forwarding client requests to those servers. It acts as a single point of entry, providing an extra layer of security, and can handle tasks like **SSL/TLS encryption** and caching.
 * **SSL/TLS**: Stands for Secure Sockets Layer / Transport Layer Security. These are cryptographic protocols that provide secure communication over a computer network. They are essential for encrypting data sent between a user's browser and a web server, protecting it from eavesdropping and tampering.
 * **HTTPS**: Stands for Hypertext Transfer Protocol Secure. It is the secure version of HTTP, the protocol used to send data between a web browser and a website. The 'S' at the end of HTTPS stands for 'Secure', meaning all communications between your browser and the website are encrypted via SSL/TLS.
-* **Authentication**: The process of verifying the identity of a user, service, or device. It ensures that only authorized parties can access a system or resource. We'll explore methods like **BasicAuth** and **O2AUTH** to control access to our web service.
+* **Authentication**: The process of verifying the identity of a user, service, or device. It ensures that only authorized parties can access a system or resource. We'll explore methods like **BasicAuth** and maybe **O2AUTH** to control access to our web service.
 
 ---
 
@@ -50,15 +50,15 @@ Before deploying our VMs, we will create a network infrastructure suitable for a
 
 #### Network Setup
 
-* **`dmz-internal` Network**: A network with a subnet that connects to the default router and the external floating IP pool, allowing our Octavia Load Balancer to receive internet traffic.
-* **`webservice-network`**: An internal network and subnet that will host our web service and reverse proxy VMs. This network is isolated from direct public access.
+* **`dmz-internal` Network**: A network with a subnet that connects to the dmz-router ``CLUM2025SecWeb-dmz-router`` and the external floating IP pool ``dmz``, allowing our Octavia Load Balancer to receive internet traffic adn redirect internally to the reverse-proxy VM.
+* **`webservice-network`**: An internal network and subnet that connects to the public-router ``CLUM2025SecWeb1-router-2`` and the external floating IP pool ``public``, allowing our VM's to access the internet and be accessable via the User-Jumphost for remote-access. This network is isolated from direct public access network ``dmz``.
 
 #### Security Groups (Firewall)
 
 We will configure two separate Security Groups to act as our firewalls:
 
-* **`ReverseProxy-SecGroup`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports **80 (HTTP)** and **443 (HTTPS)**.
-* **`Webservice-SecGroup`**: This group controls traffic from the reverse proxy to the internal web service. For example, if our service listens on port `8080`, this group will allow ingress on that port.
+* **`ReverseProxy-SecGroup`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports **80 (HTTP)** and **443 (HTTPS)**. Granularity is recommended (e.G. just allow the loadbalancer to access the reverse-proxy VM)
+* **`Webservice-SecGroup`**: This group controls traffic from the reverse proxy to the internal web service. For example, if our webservice listens on port `8080`, this group will allow ingress on that port. Granularity is recommended (e.G. just allow the reverse-proxy to access the webservice VM)
 
 ---
 
