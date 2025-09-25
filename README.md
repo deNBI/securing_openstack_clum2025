@@ -52,6 +52,7 @@ Before deploying our VMs, we will create a network infrastructure suitable for a
 
 * **`CLUM2025SecWeb-dmz-int-network`**: An internal network with a subnet that connects to the dmz-router ``CLUM2025SecWeb-dmz-router`` and the external floating IP pool ``dmz``, allowing our Octavia Load Balancer to receive internet traffic adn redirect internally to the reverse-proxy VM.
 * **`CLUM2025SecWeb1-network-2`**: An internal network and subnet that connects to the public-router ``CLUM2025SecWeb1-router-2`` and the external floating IP pool ``public``, allowing our VM's to access the internet and be accessable via the User-Jumphost for remote-access. This network is isolated from direct public access network ``dmz``.
+* * **`CLUM2025SecWeb1-reverseproxy-network`**: An internal network and subnet, dedicated to the reverse-proxy VM that connects to the public-router ``CLUM2025SecWeb1-router-2`` and the external floating IP pool ``public``, allowing our VM's to access the internet and be accessable via the User-Jumphost for remote-access. This network is isolated from direct public access network ``dmz``.
 
 #### Security Groups (Firewall)
 
@@ -69,7 +70,7 @@ Now we will launch two virtual machines (VMs) and connect them to our private ne
 #### **Reverse Proxy VM**
 
 * **Name:** `reverse-proxy-<YOUR_NAME>`
-* **Network:** `CLUM2025SecWeb1-network-2`
+* **Network:** `CLUM2025SecWeb1-reverseproxy-network`
 * **Security Group:** `ReverseProxy-SecGroup-<YOUR_NAME>` , `default`
 * **Flavor:** `de.NBI default`
 * **Image:** `Ubuntu-24.04-Docker`
