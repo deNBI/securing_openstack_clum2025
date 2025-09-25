@@ -1,3 +1,7 @@
+I understand. My previous response included the markdown syntax. Here is the entire text in plain markdown format, ready for you to copy and save as a .md file.
+
+Markdown
+
 # Securing a Web Service in OpenStack: A Hands-On Workshop
 ---
 
@@ -12,6 +16,16 @@ This workshop is a practical guide to **securing a web service** in the de.NBI B
 
 This workshop emphasizes hands-on application and best practices for securing your own cloud-based web services. We will delve into more detailed topics and questions as time permits.
 
+***
+
+### Key Concepts
+
+* **Load Balancer**: A device or service that efficiently distributes incoming network traffic across a group of backend servers. Its purpose is to increase the capacity, reliability, and availability of an application.
+* **Reverse Proxy**: A server that sits in front of one or more web servers, forwarding client requests to those servers. It acts as a single point of entry, providing an extra layer of security, and can handle tasks like **SSL/TLS encryption** and caching.
+* **SSL/TLS**: Stands for Secure Sockets Layer / Transport Layer Security. These are cryptographic protocols that provide secure communication over a computer network. They are essential for encrypting data sent between a user's browser and a web server, protecting it from eavesdropping and tampering.
+* **HTTPS**: Stands for Hypertext Transfer Protocol Secure. It is the secure version of HTTP, the protocol used to send data between a web browser and a website. The 'S' at the end of HTTPS stands for 'Secure', meaning all communications between your browser and the website are encrypted via SSL/TLS.
+* **Authentication**: The process of verifying the identity of a user, service, or device. It ensures that only authorized parties can access a system or resource. We'll explore methods like **BasicAuth** and **O2AUTH** to control access to our web service.
+
 ---
 
 ### Technologies Used
@@ -23,7 +37,6 @@ This workshop emphasizes hands-on application and best practices for securing yo
 | **Docker** | A platform for developing, shipping, and running applications in containers. We'll use it to package our web service and reverse proxy, ensuring they are portable and easy to manage. |
 | **Python HTTP Server** | A simple web server written in Python. This will be our "dummy" web service to demonstrate the security principles. |
 | **Caddy** | An open-source web server with powerful reverse proxy capabilities. We'll use it for its built-in automation of HTTPS certificate provisioning via Let's Encrypt. Caddy simplifies SSL/TLS encryption, making it easy to secure web traffic. |
-| **BasicAuth & O2AUTH** | We will implement these two forms of authentication: **BasicAuth** (simple username and password) and **O2AUTH** (a more secure, token-based authentication method) to protect our web service from unauthorized access. |
 
 ---
 
@@ -160,21 +173,6 @@ We will now configure our VMs to run the web service and the reverse proxy using
     * **Test the connection**: From the `web-service` VM, use `curl` to test the reverse proxy.
         ```bash
         curl https://<reverse-proxy-internal-ip>
-        ```
-        You should get a response, confirming the reverse proxy is working.
-
----
-
-### Step 5: Final External Test via Load Balancer ✅
-
-This final step verifies that your entire setup is working from the outside world.
-
-* Find the **floating IP address** of your Octavia load balancer in the OpenStack dashboard.
-* From your local machine (outside of OpenStack), use your web browser or `curl` to access the service via the floating IP.
-    ```bash
-    curl https://<load-balancer-floating-ip>
-    ```
-    Your request should be routed through the load balancer to the reverse proxy, which then forwards it to the web service, and you should receive a successful response. This confirms your secured web service is now accessible on the internet!
 
 # Deploying FastAPI with docker
 
