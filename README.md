@@ -169,7 +169,8 @@ We will now configure our VMs to run the web service and the reverse proxy using
 
 2.  **Deploy the Web Service**:
     * On the `web-service` VM, navigate to the directory `./Docker/web-app/python-webserver` with the `docker-compose.yml` file for the web service.
-    * Check the exposed ports in the `docker-compose.yml` and `server.py`. The preconfigured port is `8080` but you can adapt it when you want but dont forget you need to adapt the reverse-proxy aswell as the SecGroups if you do so.
+    * Check the exposed ports in the `docker-compose.yml` and `server.py`. The preconfigured port is `8080`. You could adapt it if you want to but dont forget you need to adapt the reverse-proxy aswell as the SecGroups
+      
       **docker-compose.yml**
       ```
       services:
