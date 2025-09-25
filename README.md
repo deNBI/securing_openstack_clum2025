@@ -144,7 +144,7 @@ We will now configure our VMs to run the web service and the reverse proxy using
         ```
 
 
-         ```.
+```
 ├── Docker/
 │   ├── proxy/
 │   │   ├── caddy_basicauth/
