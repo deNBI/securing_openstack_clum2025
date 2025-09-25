@@ -223,7 +223,7 @@ We will now configure our VMs to run the web service and the reverse proxy using
          }
       }
       ```
-      * Adapt the placeholder for the `<YOUR_DNS_ENTRY>` with one of the dns-entries we provide for you. We already defined the dns-entries with corresponding floating/ips from the `dmz` pool/
+      * Adapt the placeholder for the `<YOUR_DNS_ENTRY>` with one of the dns-entries we provide for you. We already defined the dns-entries with corresponding floating-ips from the `dmz` pool
       * Adapt the placeholder for the `reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>` with the **internal IP address and the exposed port** of your `web-service` VM.
       * If you wanna add a new user to basic_auth you have to define it in the Caddyfile with a username and a hashed password
    
