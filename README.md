@@ -145,32 +145,35 @@ We will now configure our VMs to run the web service and the reverse proxy using
     * On each VM, clone the workshop repository containing the Docker files:
         ```bash
         git clone https://github.com/deNBI/securing_openstack_clum2025.git
-        cd /securing_openstack_clum2025
+        cd securing_openstack_clum2025
         ```
 
-      **Repository tree view**
-      ```
-      ├── Docker/
-      │   ├── proxy/
-      │   │   ├── caddy_basicauth/
-      │   │   │   ├── Dockerfile
-      │   │   │   ├── docker-compose.yml
-      │   │   │   └── Caddyfile
-      │   │   └── caddy_oauth2/
-      │   │       ├── Dockerfile
-      │   │       ├── docker-compose.yml
-      │   │       └── Caddyfile
-      │   └── web-app/
-      │       ├── python-webserver/
-      │       │   ├── Dockerfile
-      │       │   ├── docker-compose.yml
-      │       │   └── server.py
-      │       └── fast-api/
-      │           ├── Dockerfile
-      │           ├── docker-compose.yml
-      │           └── requirements.txt
-      └── README.md
-      ```
+    **Repository tree view**
+    ```
+    ├── Docker
+    │       ── proxy
+    │   │   ├── caddy_basicauth
+    │   │   │   ├── Caddyfile
+    │   │   │   ├── Dockerfile
+    │   │   │   └── docker-compose.yml
+    │   │   └── caddy_oauth2
+    │   │       ├── Caddyfile
+    │   │       ├── Dockerfile
+    │   │       └── docker-compose.yml
+    │   └── web-app
+    │       ├── fast-api
+    │       │   ├── Dockerfile
+    │       │   ├── app
+    │       │   │   ├── __init__.py
+    │       │   │   └── main.py
+    │       │   ├── docker-compose.yml
+    │       │   └── requirements.txt
+    │       └── python-webserver
+    │           ├── Dockerfile
+    │           ├── docker-compose.yml
+    │           └── server.py
+    └── README.md
+    ```
 
 2.  **Deploy the Web Service**:
     * On the `web-service` VM, navigate to the directory `./Docker/web-app/python-webserver` with the `docker-compose.yml` file for the web service.
@@ -245,7 +248,7 @@ We will now configure our VMs to run the web service and the reverse proxy using
       ```
       * Adapt the placeholder for the `<YOUR_DNS_ENTRY>` with one of the dns-entries we provide for you. We already defined the dns-entries with corresponding floating-ips from the `dmz` pool
       * Adapt the placeholder for the `reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>` with the **internal IP address and the exposed port** of your `web-service` VM.
-      * If you wanna add a new user to basic_auth you have to define it in the Caddyfile with a username and a hashed password
+      * If you want to add a new user to basic_auth you have to define it in the Caddyfile with a username and a hashed password
    
     * Start the reverse proxy container:
         ```bash
