@@ -211,6 +211,8 @@ We will now configure our VMs to run the web service and the reverse proxy using
         ```bash
         sudo docker compose up -d
         ```
+    !!! note If you need to make changes to the containers, you need to rebuild the images for the chaneges to be depoyed. After changing the files restart the containers with `sudo docker compose up --force-recreate --build -d`
+
     * **Test the connection**: From the `reverse-proxy` VM, use `curl` to verify that you can reach the web service on its internal IP address.
         ```bash
         curl http://<web-service-internal-ip>:8080
@@ -259,7 +261,7 @@ We will now configure our VMs to run the web service and the reverse proxy using
         sudo docker logs caddy-container-name
         ```
         Look for messages indicating successful certificate acquisition.
-    * **Test the connection**: From the `web-service` VM, use `curl` to test the reverse proxy.
+    * **Test the connection**: From the `web-service` VM, use `curl` to test the reverse proxy. This only works if the Caddyfile has also an entry for the internal IP of the reverse proxy without authentication.
         ```bash
         curl https://<reverse-proxy-internal-ip>
         ```
