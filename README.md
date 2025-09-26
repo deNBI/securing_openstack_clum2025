@@ -233,7 +233,8 @@ We will now configure our VMs to run the web service and the reverse proxy using
           reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>
           basic_auth {
               admin $2a$14$7JTsZSWdHLIe.GHyPdpImu0iQrk6HpwUFQ5iRl895zp6x/kxcELIC
-              # For adding new user you need to provide <USERNAME> <HASHED_PASSWORD> 
+              # Created account: user: admin pw: sicher
+              # For adding new user you need to provide <USERNAME> <HASHED_PASSWORD>
               # sudo docker run --rm caddy caddy hash-password --plaintext <PASSWORD_2_HASH>
          }
       }
