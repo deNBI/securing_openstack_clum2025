@@ -97,10 +97,9 @@ The load balancer is our entry point from the internet. It will distribute traff
 1.  **Create a Load Balancer**: In the OpenStack dashboard, navigate to **Network > Load Balancers** and click **Create Load Balancer**.
     * **Name:** `workshop-lb-<YOUR_NAME>`
     * **Subnet:** Select the `CLUM2025SecWeb-dmz-int-network` subnet. This is crucial as it connects the load balancer to the public network.
-    * **Floating IP:** Attach an existing and predefined floating-ip from the pool `dmz` to your load balancer. This will be the public IP address of your web service and is connected to the dns-entry.
 
 2.  **Add a Listener**: A listener defines the protocol and port on which the load balancer listens for incoming traffic.
-    * Select the `workshop-lb` load balancer and go to the **Listeners** tab. Click **Add Listener**.
+    * The first listener is created when the loadbalancer is created, for additional listeners, select the `workshop-lb` load balancer and go to the **Listeners** tab. Click **Add Listener**.
     * **Name:** `http-listener`
     * **Protocol:** `TCP`
     * **Port:** `80`
@@ -127,6 +126,10 @@ The load balancer is our entry point from the internet. It will distribute traff
     * **Port:** `443`
     * **Certificate:** You will need to upload a security certificate for this.
     * **Default Pool:** Create a new pool called `https-pool`. Add the `reverse-proxy` VM as a member with port `443`.
+
+6. **Load Balancer Floating IP**: Add the public IP from the `dmz-ext` network to your loadbalancer to make it accessable from the internet.
+    * Go to the `Load Balancers` overview and add click on `Accociate Floating IP` right of you loadbalancer.
+    * **Floating IP:** Attach an existing and predefined floating-ip from the pool `dmz` to your load balancer. This will be the public IP address of your web service and is connected to the dns-entry.
 
 Now, your load balancer is configured to receive internet traffic on its floating IP and forward it to your reverse proxy VM, providing a secure and scalable entry point for your web service.
 
