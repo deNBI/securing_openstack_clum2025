@@ -56,10 +56,11 @@ Before deploying our VMs, we will create a network infrastructure suitable for a
 
 #### Security Groups (Firewall)
 
-We will configure two separate Security Groups to act as our firewalls(locally on the VM):
+We will configure three separate Security Groups to act as our firewalls(locally on the VM):
 
 * **`ReverseProxy-SecGroup-<YOUR_NAME>`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports `80 (HTTP)` and `443 (HTTPS)`. Granularity is recommended (e.G. just allow the loadbalancer to access the reverse-proxy VM)
 * **`Webservice-SecGroup-<YOUR_NAME>`**: This group controls traffic from the reverse proxy to the internal web service. For example, if our webservice listens on port `8080`, this group will allow ingress on that port. Granularity is recommended (e.G. just allow the reverse-proxy to access the webservice VM)
+* **`SSHJumphost-SecGroup-<YOUR_NAME>`**: This group controls the ssh connection from `denbi-jumphost-01.bihealth.org` to the VMs over port `22 (SSH)`. Granularity is recommended (e.G. just allow the jumphost to access the VMs) 
 
 ---
 
