@@ -128,7 +128,7 @@ The load balancer is our entry point from the internet. It will distribute traff
     * **Default Pool:** Create a new pool called `https-pool`. Add the `reverse-proxy` VM as a member with port `443`.
 
 6. **Load Balancer Floating IP**: Add the public IP from the `dmz-ext` network to your loadbalancer to make it accessable from the internet.
-    * Go to the `Load Balancers` overview and click on `Accociate Floating IP` right of you loadbalancer.
+    * Go to the `Load Balancers` overview and click on `Accociate Floating IP` on the right side of your loadbalancer.
     * **Floating IP:** Attach an existing and predefined floating-ip from the pool `dmz` to your load balancer. This will be the public IP address of your web service and is connected to the dns-entry.
 
 Now, your load balancer is configured to receive internet traffic on its floating IP and forward it to your reverse proxy VM, providing a secure and scalable entry point for your web service.
