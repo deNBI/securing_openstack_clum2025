@@ -2,7 +2,7 @@ services:
   caddy_reverse_proxy_basicauth:
     build: .
     network_mode: "host"
-    container_name: caddy_reverse_proxy_basicauth
+    container_name: caddy_reverse_proxy_oauth2_github
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
