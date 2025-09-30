@@ -211,15 +211,16 @@ We will now configure our VMs to run the web service and the reverse proxy using
         ```bash
         sudo docker compose up -d
         ```
->[!NOTE] 
->If you need to make changes to the containers, you need to rebuild the images for the changes to be deployed. After changing the files restart the containers with `sudo docker compose up --force-recreate --build -d`
-
-
     * **Test the connection**: From the `reverse-proxy` VM, use `curl` to verify that you can reach the web service on its internal IP address.
         ```bash
         curl http://<web-service-internal-ip>:8080
         ```
         You should receive a response from the web service.
+>[!NOTE] 
+>If you need to make changes to the containers, you need to rebuild the images for the changes to be deployed. After changing the files restart the containers with `sudo docker compose up --force-recreate --build -d`
+
+
+
 
 3.  **Deploy the Reverse Proxy**:
     * On the `reverse-proxy` VM, navigate to the directory `./Docker/proxy/caddy_basicauth` with the `docker-compose.yml` file for the reverse-proxy.
