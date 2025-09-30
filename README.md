@@ -273,15 +273,15 @@ You should now be able to access the webservice via the dns-hostname of your set
 
 ## Troubleshooting
 
-If the service is not availabel over the internet you can use several tools to look to make sure the setup works as expected and to find errors or issues.
+If the service is not availabel over the internet, you can use several tools to make sure the setup works as expected and to find errors or issues.
 
 ### 1. Container logs
 
-To find out what the container is doing and the see possible error messages, you should lool at the log files.
+To find out what the container is doing and to see possible error messages, you should look at the log files.
 
 - Take a look into the **running container logs**:
 `sudo docker logs <container-name> -f` 
-This will show the running log for the container.
+This will show the running log for the container and add messages as they are written.
 - If you can not find an error or need more information you can take a look in the **logfiles inside of the container** itself. To do this open a console in the container and find the internal log files:
 `sudo docker exec -it <container-name> /bin/sh` 
 Depending on the image used to build the container the installed shell might differ, or there might even be no shell installed at all.
