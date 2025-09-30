@@ -1,37 +1,60 @@
-# With the DNS-Name provided Caddy automatically tries to provide a certification via LetsEncrypt, so make sure your Loadbalancer has the same FloatingIP then the corresponding DNS-Entry you are using in the following config
-<YOUR_DNS_ENTRY> {
-    # This block configures the caddy-security app and its plugins.
-    security {
-        # Define GitHub as the sole identity provider.
-        oauth identity provider github {
-            client_id env.GITHUB_CLIENT_ID
-            client_secret env.GITHUB_CLIENT_SECRET
-        }
+{
+        http_port 80
+        https_port 443
+        # debug
 
-        # The authentication portal will only show the GitHub login option.
-        authentication portal myportal {
-            enable identity provider github
-            path /auth
-        }
+        order authenticate before respond
+        order authorize before basicauth
 
-        # Define the policy that allows any authenticated GitHub user.
-        authorization policy github_access {
-            set auth url https://<YOUR_DNS_ENTRY>/auth/oauth2/github
-            # The 'match realm github' directive is sufficient.
-            # It allows anyone authenticated via the GitHub provider.
-            match realm github
-            allow roles authp/user
-        }
-    }
+        security {
+                oauth identity provider github  {GITHUB_CLIENT_ID} {GITHUB_CLIENT_SECRET}
 
-    # Handle all requests to the "/auth" path for the login portal.
-    route /auth* {
+                authentication portal myportal {
+                        crypto default token lifetime 3600
+                        crypto key sign-verify {env.JWT_SHARED_KEY}
+                        cookie domain <DNS_NAME>
+                        enable identity provider github
+                        ui {
+                                links {
+                                        "My Identity" "/whoami" icon "las la-user"
+                                }
+                        }
+
+                        transform user {
+                                match realm github
+                                action add role authp/user
+                                ui link "WebServiceClum2025" <DNS_NAME> icon "las la-star"
+                        }
+
+                }
+
+                authorization policy mypolicy {
+                        set auth url {AUTH_URL}
+                        crypto key verify {env.JWT_SHARED_KEY}
+                        allow roles authp/user
+                        validate bearer header
+                        inject headers with claims
+                }
+        }
+}
+
+
+<DNS_NAME> {
+    # Caddy will automatically provision a Let's Encrypt certificate for test.org
+
+    # A. Authentication Portal Handler (Handles /auth, /auth/login, /auth/callback, etc.)
+    # The portal must be accessible here to handle redirects from the policy.
+    handle /auth* {
         authenticate with myportal
     }
 
-    # All other traffic is protected by the general GitHub access policy.
-    route * {
-        authorize with github_access
-        reverse_proxy <WEBSERVER_IP:WEBSERVER_PORT>
+    # B. Protected Webservice Handler (Protects the main application content on the root path)
+    handle / {
+        # Apply the authorization policy to protect this resource
+        authorize with mypolicy
+
+
+        # If this is a backend service, you would use:
+         reverse_proxy <WEBSERVICE_IP>
     }
 }
