@@ -58,7 +58,7 @@ Before deploying our VMs, we will create a network infrastructure suitable for a
 
 We will configure three separate Security Groups to act as our firewalls(locally on the VM):
 
-* **`ReverseProxy-SecGroup-<YOUR_NAME>`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports `80 (HTTP)` and `443 (HTTPS)`. Granularity is recommended (e.G. just allow the loadbalancer to access the reverse-proxy VM)
+* **`ReverseProxy-SecGroup-<YOUR_NAME>`**: This group handles inbound traffic from the load balancer to the reverse proxy. It will be configured to allow ingress on ports `80 (HTTP)` and `443 (HTTPS)`. The connection is ment to be used from the internet so allow all incoming traffic with 0.0.0.0/0. 
 * **`Webservice-SecGroup-<YOUR_NAME>`**: This group controls traffic from the reverse proxy to the internal web service. For example, if our webservice listens on port `8080`, this group will allow ingress on that port. Granularity is recommended (e.G. just allow the reverse-proxy to access the webservice VM)
 * **`SSHJumphost-SecGroup-<YOUR_NAME>`**: This group controls the ssh connection from `denbi-jumphost-01.bihealth.org` to the VMs over port `22 (SSH)`. Granularity is recommended (e.G. just allow the jumphost to access the VMs) 
 
@@ -122,7 +122,7 @@ The load balancer is our entry point from the internet. It will distribute traff
 
 5.  **Repeat for HTTPS**: Follow the same steps to create a second listener for HTTPS traffic.
     * **Listener Name:** `https-listener`
-    * **Protocol:** `TERMINATED_HTTPS` (This offloads the SSL/TLS encryption to the load balancer, which is a common practice).
+    * **Protocol:** `TCP`
     * **Port:** `443`
     * **Certificate:** You will need to upload a security certificate for this.
     * **Default Pool:** Create a new pool called `https-pool`. Add the `reverse-proxy` VM as a member with port `443`.
@@ -270,3 +270,30 @@ We will now configure our VMs to run the web service and the reverse proxy using
 ## Connect via the internet
 
 You should now be able to access the webservice via the dns-hostname of your setup via the internet.
+
+## Troubleshooting
+
+If the service is not availabel over the internet you can use several tools to look to make sure the setup works as expected and to find errors or issues.
+
+### 1. Container logs
+
+To find out what the container is doing and the see possible error messages, you should lool at the log files.
+
+- Take a look into the **running container logs**:
+`sudo docker logs <container-name> -f` 
+This will show the running log for the container.
+- If you can not find an error or need more information you can take a look in the **logfiles inside of the container** itself. To do this open a console in the container and find the internal log files:
+`sudo docker exec -it <container-name> /bin/sh` 
+Depending on the image used to build the container the installed shell might differ, or there might even be no shell installed at all.
+
+### 2. Network connections
+
+The containers are communicating over ports with the vm and the vm is communication with other vms and the loadbalancer over ports. Security groups are used to open specific ports or block networks or IP addresses. 
+
+- To see the ports used by the containers use:
+`sudo docker port <container-name>`
+If this command does not show any used ports your container is either using the host network (look in the `docker_compose.yml` for "host" in the section `networl_mode`) or is not configured the way you want.
+- To see the ports the vm lisens on use:
+`ss -tulpan`
+- For a detailed record of all traffic you can use tcpdump, but use this with caution. Some networks should not be listed on and the output might be to much to use. This can be seen as intrusion if performed on secured networks that are monitored. So only use this if you are sure it is secure and necessary. Look for the interface you want to observe with `ip a` and add a port to see only traffic for this port.
+`sudo tcpdump -i enp3s0 port 443`
