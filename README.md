@@ -290,9 +290,10 @@ Depending on the image used to build the container, the installed shell might di
 
 The containers are communicating over ports with the vm and the vm is communication with other vms and the loadbalancer over ports. Security groups are used to open specific ports or block networks or IP addresses. 
 
+- Take a look at the security groups and the allowed ip addresses and ports.
 - To see the ports used by the containers use:
 `sudo docker port <container-name>`
-If this command does not show any used ports your container is either using the host network (look in the `docker_compose.yml` for "host" in the section `networl_mode`) or is not configured the way you want.
+If this command does not show any used ports your container is either using the host network (look in the `docker_compose.yml` for "host" in the section `network_mode`) or is not configured the way you want.
 - To see the ports the vm lisens on use:
 `ss -tulpan`
 - For a detailed record of all traffic you can use tcpdump, but use this with caution. Some networks should not be listed on and the output might be to much to use. This can be seen as intrusion if performed on secured networks that are monitored. So only use this if you are sure it is secure and necessary. Look for the interface you want to observe with `ip a` and add a port to see only traffic for this port.
