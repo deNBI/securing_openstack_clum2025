@@ -214,6 +214,7 @@ We will now configure our VMs to run the web service and the reverse proxy using
 >[!NOTE] 
 >If you need to make changes to the containers, you need to rebuild the images for the changes to be deployed. After changing the files restart the containers with `sudo docker compose up --force-recreate --build -d`
 
+
     * **Test the connection**: From the `reverse-proxy` VM, use `curl` to verify that you can reach the web service on its internal IP address.
         ```bash
         curl http://<web-service-internal-ip>:8080
