@@ -28,11 +28,11 @@ This workshop emphasizes hands-on application and best practices for securing yo
 
 | Tool/Technology | Description |
 | :--- | :--- |
-| **OpenStack** | A suite of open-source software for creating and managing private and public clouds. In this workshop, we'll use it to provision our virtual machines, networks, and security rules. |
-| **OpenStack Octavia** | The native load-balancing-as-a-service component of OpenStack. We'll use it to distribute incoming traffic and route it to our reverse proxy. |
-| **Docker** | A platform for developing, shipping, and running applications in containers. We'll use it to package our web service and reverse proxy, ensuring they are portable and easy to manage. |
-| **Python HTTP Server** | A simple web server written in Python. This will be our "dummy" web service to demonstrate the security principles. |
-| (Caddy)[https://docs.python.org/3/library/http.server.html] | An open-source web server with powerful reverse proxy capabilities. We'll use it for its built-in automation of HTTPS certificate provisioning via Let's Encrypt. Caddy simplifies SSL/TLS encryption, making it easy to secure web traffic. |
+| [OpenStack](https://www.openstack.org/) | A suite of open-source software for creating and managing private and public clouds. In this workshop, we'll use it to provision our virtual machines, networks, and security rules. |
+| [OpenStack Octavia](https://docs.openstack.org/octavia/latest/) | The native load-balancing-as-a-service component of OpenStack. We'll use it to distribute incoming traffic and route it to our reverse proxy. |
+| [Docker](https://www.docker.com/) | A platform for developing, shipping, and running applications in containers. We'll use it to package our web service and reverse proxy, ensuring they are portable and easy to manage. |
+| [Python HTTP Server](https://docs.python.org/3/library/http.server.html) | A simple web server written in Python. This will be our "dummy" web service to demonstrate the security principles. |
+| [Caddy]([https://docs.python.org/3/library/http.server.html](https://caddyserver.com/)) | An open-source web server with powerful reverse proxy capabilities. We'll use it for its built-in automation of HTTPS certificate provisioning via Let's Encrypt. Caddy simplifies SSL/TLS encryption, making it easy to secure web traffic. |
 
 ---
 
